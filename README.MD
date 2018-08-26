@@ -26,3 +26,10 @@ Trousers 10% off: -£3,55
 Total: £91,35
 
 ```
+
+To add a new Campaign with different business rules:
+All you need to do is create a class and implement with the interface Campaign and Create a document CampaignAttributes for it
+
+To add a new Campaign with the same business rules, but with different goods or values:
+All you need to do is add a new document in MongoDB. No change in code is required.
+
