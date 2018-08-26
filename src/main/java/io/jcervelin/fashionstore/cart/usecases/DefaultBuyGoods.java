@@ -20,7 +20,7 @@ public class DefaultBuyGoods extends BuyGoods {
 
     @Override
     public CartResponse execute(final Collection<String> productNames) {
-        final Collection<Product> allProductsById = repository.findAllBySku(productNames);
+        final Collection<Product> allProductsById = repository.findAllByNameIn(productNames);
 
         final List<Product> productList = CollectionUtils.emptyIfNull(productNames).stream()
                 .filter(s -> allProductsById.stream()

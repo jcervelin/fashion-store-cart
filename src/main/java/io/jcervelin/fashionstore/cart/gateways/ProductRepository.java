@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Collection;
 
 public interface ProductRepository extends MongoRepository<Product,String> {
-    Collection<Product> findAllBySku(Collection<String> productNames);
+    Collection<Product> findAllByNameIn(Collection<String> productNames);
 
 }

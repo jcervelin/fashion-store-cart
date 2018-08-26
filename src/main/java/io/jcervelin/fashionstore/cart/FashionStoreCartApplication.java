@@ -1,6 +1,7 @@
 package io.jcervelin.fashionstore.cart;
 
 import io.jcervelin.fashionstore.cart.domains.Product;
+import io.jcervelin.fashionstore.cart.usecases.ConvertCommandLineToProductList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -15,6 +16,8 @@ public class FashionStoreCartApplication  implements ApplicationRunner {
 
     @Autowired
     private final MongoTemplate mongoTemplate;
+    @Autowired
+    private final ConvertCommandLineToProductList convertCommandLineToProductList;
 
     public static void main(String[] args) {
         SpringApplication.run(FashionStoreCartApplication.class, args);
@@ -47,9 +50,7 @@ public class FashionStoreCartApplication  implements ApplicationRunner {
             .price(9.50)
             .build());
 
-        System.out.println(mongoTemplate.findAll(Product.class));
-
-        args.getNonOptionArgs().forEach(System.out::println);
+         convertCommandLineToProductList.convert(args.getNonOptionArgs());
 
 
     }

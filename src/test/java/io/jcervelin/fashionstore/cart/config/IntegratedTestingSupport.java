@@ -1,11 +1,13 @@
 package io.jcervelin.fashionstore.cart.config;
 
-import lombok.RequiredArgsConstructor;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @DataMongoTest
-@RequiredArgsConstructor
+@ComponentScan(basePackages = {"io.jcervelin.fashionstore.cart"})
 public class IntegratedTestingSupport {
-    private final MongoTemplate mongoTemplate;
 }

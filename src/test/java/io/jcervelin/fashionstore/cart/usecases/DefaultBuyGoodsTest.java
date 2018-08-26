@@ -8,9 +8,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.util.*;
+
+import static org.mockito.Mockito.when;
 
 public class DefaultBuyGoodsTest extends UnitTestingSupport {
 
@@ -22,19 +23,24 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
 
     @Test
     public void executeShouldReturnEmptyCart() {
+        // GIVEN
         final CartResponse cartResponse = CartResponse
                 .builder()
                 .products(new ArrayList<>())
                 .total(0.0)
                 .build();
-        Mockito.when(productRepository.findAllBySku(null)).thenReturn(new ArrayList<>());
+        // WHEN
+        when(productRepository.findAllByNameIn(null))
+                .thenReturn(new ArrayList<>());
         final CartResponse result = target.execute(null);
 
+        // THEN
         Assertions.assertThat(result).isEqualToComparingFieldByField(cartResponse);
     }
 
     @Test
     public void executeShouldReturnValidCartResponse() {
+        // GIVEN
         final Product trouser = Product
                 .builder()
                 .sku("1")
@@ -48,12 +54,15 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
                 .build();
         cartResponse.getProducts().add(trouser);
 
-        Collection<String> productNames = Arrays.asList("Trousers");
+        final Collection<String> productNames = Arrays.asList("Trousers");
 
-        Mockito.when(productRepository.findAllBySku(productNames)).thenReturn(Collections.singletonList(trouser));
+        // WHEN
+        when(productRepository.findAllByNameIn(productNames))
+                .thenReturn(Collections.singletonList(trouser));
 
         final CartResponse result = target.execute(productNames);
 
+        // THEN
         Assertions.assertThat(result).isEqualToComparingFieldByField(cartResponse);
     }
 }
