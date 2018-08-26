@@ -32,7 +32,6 @@ public class CampaignAttributes {
     private LocalDateTime expires;
     private Integer percentFactor;
     private Integer buyX;
-    private Integer toY;
     private List<Product> productsAffected;
     private Product promotionalProduct;
 }

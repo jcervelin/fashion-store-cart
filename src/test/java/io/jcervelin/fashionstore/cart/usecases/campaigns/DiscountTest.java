@@ -5,7 +5,6 @@ import io.jcervelin.fashionstore.cart.domains.CampaignAttributes;
 import io.jcervelin.fashionstore.cart.domains.CartResponse;
 import io.jcervelin.fashionstore.cart.domains.Product;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +22,6 @@ public class DiscountTest extends UnitTestingSupport {
         // GIVEN
         CampaignAttributes attrValid = CampaignAttributes.builder()
                 .buyX(3)
-                .toY(2)
                 .percentFactor(10)
                 .productsAffected(Arrays.asList(Product
                         .builder()
