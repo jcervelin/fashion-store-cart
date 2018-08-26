@@ -56,7 +56,6 @@ public class FashionStoreCartApplication  implements ApplicationRunner {
             .build());
         CampaignAttributes attrValid = CampaignAttributes.builder()
                 .buyX(3)
-                .toY(2)
                 .percentFactor(10)
                 .productsAffected(Arrays.asList(Product
                         .builder()
@@ -64,9 +63,28 @@ public class FashionStoreCartApplication  implements ApplicationRunner {
                         .name("Trousers")
                         .price(35.50)
                         .build()))
-                .expires(LocalDateTime.of(2018,10,10,10,10))
+                .expires(LocalDateTime.of(2030,10,10,10,10))
                 .starts(LocalDateTime.of(2017,10,10,10,10))
                 .campaignType("Discount")
+                .build();
+        CampaignAttributes attrValidBuyX = CampaignAttributes.builder()
+                .buyX(2)
+                .percentFactor(50)
+                .productsAffected(Arrays.asList(Product
+                        .builder()
+                        .sku("3")
+                        .name("Shirt")
+                        .price(12.50)
+                        .build()))
+                .expires(LocalDateTime.of(2030,10,10,10,10))
+                .starts(LocalDateTime.of(2017,10,10,10,10))
+                .campaignType("BuyXProductsPerYDiscountInAnotherProduct")
+                .promotionalProduct(Product
+                        .builder()
+                        .sku("4")
+                        .name("Tie")
+                        .price(9.50)
+                        .build())
                 .build();
         CampaignAttributes attrInvalid = CampaignAttributes.builder()
                 .buyX(3)
@@ -83,6 +101,7 @@ public class FashionStoreCartApplication  implements ApplicationRunner {
                 .build();
         mongoTemplate.save(attrInvalid);
         mongoTemplate.save(attrValid);
+        mongoTemplate.save(attrValidBuyX);
         final CartResponse cartResponse = convertCommandLineToProductList.convert(args.getNonOptionArgs());
 
         System.out.printf("Subtotal: £%.2f\n",cartResponse.getSubTotal());

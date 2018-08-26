@@ -18,7 +18,7 @@ public class ConvertCommandLineToProductListIT extends IntegratedTestingSupport 
     public void convertShouldReturnCartWith3ValidProducts() {
         final CartResponse cartResponse = target.convert(Arrays.asList("AnatwineBasket", "Jacket", "Trousers", "Tie"));
         Assertions.assertThat(cartResponse.getProducts().size()).isEqualTo(3);
-        Assertions.assertThat(cartResponse.getTotal()).isEqualTo(94.9);
+        Assertions.assertThat(cartResponse.getTotal()).isEqualTo(91.35000000000001);
     }
 
     @Test
@@ -40,6 +40,15 @@ public class ConvertCommandLineToProductListIT extends IntegratedTestingSupport 
         thrown.expect(ContentNotFoundException.class);
         thrown.expectMessage("Products: [] not found");
         target.convert(Arrays.asList("AnatwineBasket", "  ", ""));
+    }
+
+    @Test
+    public void convertShouldReturn4ShirtsWithNoOffers() {
+        final CartResponse cartResponse = target.convert(Arrays.asList("AnatwineBasket", "Shirt", "Shirt", "Shirt","Shirt"));
+        Assertions.assertThat(cartResponse.getProducts().size()).isEqualTo(4);
+        Assertions.assertThat(cartResponse.getTotal()).isEqualTo(50.0);
+        Assertions.assertThat(cartResponse.getSubTotal()).isEqualTo(50.0);
+        Assertions.assertThat(cartResponse.getOffers().stream().findFirst().get()).isEqualTo("(No offers available)");
     }
 
 }

@@ -22,7 +22,6 @@ public class CampaignRepositoryTest extends IntegratedTestingSupport {
     public void findByStartsGreaterThanLocalDateTimeAndExpiresAfterEqualsLocalDateTime() {
         CampaignAttributes attrValid = CampaignAttributes.builder()
                 .buyX(3)
-                .toY(2)
                 .percentFactor(10)
                 .productsAffected(Arrays.asList(Product
                         .builder()
@@ -30,34 +29,39 @@ public class CampaignRepositoryTest extends IntegratedTestingSupport {
                         .name("Trousers")
                         .price(35.50)
                         .build()))
-                .expires(LocalDateTime.of(2018,10,10,10,10))
+                .expires(LocalDateTime.of(2030,10,10,10,10))
                 .starts(LocalDateTime.of(2017,10,10,10,10))
                 .campaignType("Discount")
                 .build();
-        CampaignAttributes attrInvalid = CampaignAttributes.builder()
-                .buyX(3)
-                .percentFactor(10)
+        CampaignAttributes attrValidBuyX = CampaignAttributes.builder()
+                .buyX(2)
+                .percentFactor(50)
                 .productsAffected(Arrays.asList(Product
                         .builder()
-                        .sku("1")
-                        .name("Trousers")
-                        .price(35.50)
+                        .sku("3")
+                        .name("Shirt")
+                        .price(12.50)
                         .build()))
-                .expires(LocalDateTime.of(2017,10,10,10,10))
-                .starts(LocalDateTime.of(2016,10,10,10,10))
-                .campaignType("Discount")
+                .expires(LocalDateTime.of(2030,10,10,10,10))
+                .starts(LocalDateTime.of(2017,10,10,10,10))
+                .campaignType("BuyXProductsPerYDiscountInAnotherProduct")
+                .promotionalProduct(Product
+                        .builder()
+                        .sku("4")
+                        .name("Tie")
+                        .price(9.50)
+                        .build())
                 .build();
-
-        repository.save(attrValid);
-        repository.save(attrInvalid);
 
         final Collection<CampaignAttributes> result
                 = repository.findValidCampaigns(now()).get();
-        Assertions.assertThat(result).isNotNull();
-        result.forEach(attributes ->
-                Assertions.assertThat(attributes).isEqualToIgnoringGivenFields(attrValid,"id")
-        );
 
+        Assertions.assertThat(result).isNotNull();
+        final CampaignAttributes discount = result.stream().filter(attributes -> attrValid.getCampaignType().equalsIgnoreCase(attributes.getCampaignType())).findFirst().get();
+        final CampaignAttributes buyX = result.stream().filter(attributes -> attrValidBuyX.getCampaignType().equalsIgnoreCase(attributes.getCampaignType())).findFirst().get();
+
+        Assertions.assertThat(discount).isEqualToIgnoringGivenFields(attrValid, "id");
+        Assertions.assertThat(buyX).isEqualToIgnoringGivenFields(attrValidBuyX, "id");
 
     }
 }

@@ -14,12 +14,11 @@ import java.util.stream.Collectors;
  * Campaign of Discount
  * Given a list of impacted products [attributes.getProductsAffected()]
  * and a percent factor [attributes.getPercentFactor()], a discount is given for each element in that list
+ * Ex.: Trousers have 10% of discount
  */
 @Component(value="Discount")
 @RequiredArgsConstructor
 public class Discount implements Campaign {
-
-    private static final String DISCOUNT_FORMAT = "%s %d%% off: -£%.2f";
 
     @Override
     public CartResponse execute(CartResponse cartResponse, CampaignAttributes attributes) {
@@ -40,7 +39,4 @@ public class Discount implements Campaign {
         return cartResponse;
     }
 
-    private Double getDiscountByPercent(Double price, Integer amount, Integer percentage){
-        return (price * amount) * (percentage / 100.0);
-    }
 }
