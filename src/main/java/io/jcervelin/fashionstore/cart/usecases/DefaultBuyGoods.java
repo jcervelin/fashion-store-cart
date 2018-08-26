@@ -32,7 +32,7 @@ public class DefaultBuyGoods extends BuyGoods {
 
         final List<Product> productList = CollectionUtils.emptyIfNull(productNames)
                 .stream()
-                .flatMap(s -> allProductsById
+                .flatMap(s -> CollectionUtils.emptyIfNull(allProductsById)
                         .stream()
                         .filter(product -> product.getName().equals(s))
                         .map(product -> Product.builder()

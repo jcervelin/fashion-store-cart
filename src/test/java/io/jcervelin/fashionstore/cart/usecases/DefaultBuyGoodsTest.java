@@ -3,12 +3,14 @@ package io.jcervelin.fashionstore.cart.usecases;
 import io.jcervelin.fashionstore.cart.config.UnitTestingSupport;
 import io.jcervelin.fashionstore.cart.domains.CartResponse;
 import io.jcervelin.fashionstore.cart.domains.Product;
+import io.jcervelin.fashionstore.cart.domains.exceptions.ContentNotFoundException;
 import io.jcervelin.fashionstore.cart.gateways.ProductRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.BeanUtils;
 
 import java.util.*;
 
@@ -101,10 +103,21 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
     @Test
     public void executeShouldReturnValidCartResponseWith3Trousers() {
         // GIVEN
+        final Product trousers1 = listOfProducts
+                .stream()
+                .filter(product -> product.getName()
+                        .equalsIgnoreCase("Trousers"))
+                .findFirst().orElse(null);
+        final Product trousers2 = Product.builder().build();
+        final Product trousers3 = Product.builder().build();
+
+        BeanUtils.copyProperties(trousers1,trousers2);
+        BeanUtils.copyProperties(trousers1,trousers3);
+
         final CartResponse cartResponse = CartResponse
                 .builder()
-                .products(listOfProducts)
-                .total(35.50)
+                .products(Arrays.asList(trousers1,trousers2,trousers3))
+                .total(106.50)
                 .build();
 
         final Collection<String> productNames = Arrays.asList("Trousers","Trousers","Trousers");
@@ -122,5 +135,43 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
 
         // THEN
         Assertions.assertThat(result).isEqualToComparingFieldByField(cartResponse);
+        Assertions.assertThat(result.getProducts()).containsExactlyElementsOf(cartResponse.getProducts());
+    }
+
+    @Test
+    public void executeShouldReturnNothingWhenThereAreOnlyInvalidProducts() {
+        // GIVEN
+        final CartResponse cartResponse = CartResponse
+                .builder()
+                .products(new ArrayList<>())
+                .total(0.0)
+                .build();
+
+        final Collection<String> productNames = Arrays.asList("Underwear","Socks");
+
+        // WHEN
+        when(productRepository.findAllByNameIn(productNames))
+                .thenReturn(null);
+
+        final CartResponse result = target.execute(productNames);
+
+        // THEN
+        Assertions.assertThat(result).isEqualToComparingFieldByField(cartResponse);
+    }
+
+    @Test
+    public void executeShouldReturnExceptionWhenNoContentIsFound() {
+        // GIVEN
+        thrown.expect(ContentNotFoundException.class);
+        thrown.expectMessage("Products: [Underwear Socks] not found");
+
+        final Collection<String> productNames = Arrays.asList("Underwear","Socks");
+
+        // WHEN
+        when(productRepository.findAllByNameIn(productNames))
+                .thenReturn(null);
+
+        target.execute(productNames);
+
     }
 }
