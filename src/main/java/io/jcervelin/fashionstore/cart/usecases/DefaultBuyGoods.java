@@ -2,6 +2,7 @@ package io.jcervelin.fashionstore.cart.usecases;
 
 import io.jcervelin.fashionstore.cart.domains.CartResponse;
 import io.jcervelin.fashionstore.cart.domains.Product;
+import io.jcervelin.fashionstore.cart.domains.exceptions.ContentNotFoundException;
 import io.jcervelin.fashionstore.cart.gateways.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,15 @@ public class DefaultBuyGoods extends BuyGoods {
      */
     @Override
     public CartResponse execute(final Collection<String> productNames) {
-        final Collection<Product> allProductsById = repository.findAllByNameIn(productNames);
+        final Collection<Product> allProductsById = repository.findAllByNameIn(productNames)
+                .map(products -> products.size() == 0 ? null : products)
+                .orElseThrow(() ->
+                        new ContentNotFoundException(
+                                String.format("Products: [%s] not found",
+                                        productNames
+                                        .stream()
+                                        .reduce((s, s2) -> s + ", " + s2).orElse("")
+                                )));
 
         final List<Product> productList = CollectionUtils.emptyIfNull(productNames)
                 .stream()

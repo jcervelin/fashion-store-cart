@@ -67,7 +67,7 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
                 .build();
         // WHEN
         when(productRepository.findAllByNameIn(null))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Optional.empty());
         final CartResponse result = target.execute(null);
 
         // THEN
@@ -87,11 +87,11 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
 
         // WHEN
         when(productRepository.findAllByNameIn(productNames))
-                .thenReturn(Collections.singletonList(listOfProducts
+                .thenReturn(Optional.of(Collections.singletonList(listOfProducts
                         .stream()
                         .filter(product -> product.getName()
                                 .equalsIgnoreCase("Trousers"))
-                        .findFirst().orElse(null)
+                        .findFirst().orElse(null))
                 ));
 
         final CartResponse result = target.execute(productNames);
@@ -124,11 +124,11 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
 
         // WHEN
         when(productRepository.findAllByNameIn(productNames))
-                .thenReturn(Collections.singletonList(listOfProducts
+                .thenReturn(Optional.of(Collections.singletonList(listOfProducts
                         .stream()
                         .filter(product -> product.getName()
                                 .equalsIgnoreCase("Trousers"))
-                        .findFirst().orElse(null)
+                        .findFirst().orElse(null))
                 ));
 
         final CartResponse result = target.execute(productNames);
