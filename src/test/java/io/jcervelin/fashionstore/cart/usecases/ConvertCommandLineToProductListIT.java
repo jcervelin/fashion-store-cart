@@ -28,4 +28,18 @@ public class ConvertCommandLineToProductListIT extends IntegratedTestingSupport 
         target.convert(Arrays.asList("AnatwineBasket", "Underwear", "Socks"));
     }
 
+    @Test
+    public void convertShouldWhenAllProductsAreInvalidReturnError() {
+        thrown.expect(ContentNotFoundException.class);
+        thrown.expectMessage("Products: [] not found");
+        target.convert(Arrays.asList("AnatwineBasket", "", ""));
+    }
+
+    @Test
+    public void convertShouldWhenAllProductsOrWithEmptySpacesAreInvalidReturnError() {
+        thrown.expect(ContentNotFoundException.class);
+        thrown.expectMessage("Products: [] not found");
+        target.convert(Arrays.asList("AnatwineBasket", "  ", ""));
+    }
+
 }

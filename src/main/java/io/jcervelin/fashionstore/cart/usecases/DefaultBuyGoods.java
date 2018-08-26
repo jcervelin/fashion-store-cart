@@ -7,6 +7,7 @@ import io.jcervelin.fashionstore.cart.gateways.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -34,8 +35,10 @@ public class DefaultBuyGoods extends BuyGoods {
                 .orElseThrow(() ->
                         new ContentNotFoundException(
                                 String.format("Products: [%s] not found",
-                                        productNames
+                                        CollectionUtils.emptyIfNull(productNames)
                                         .stream()
+                                        .map(StringUtils::trimToEmpty)
+                                        .filter(StringUtils::isNoneEmpty)
                                         .reduce((s, s2) -> s + ", " + s2).orElse("")
                                 )));
 
@@ -43,7 +46,7 @@ public class DefaultBuyGoods extends BuyGoods {
                 .stream()
                 .flatMap(s -> CollectionUtils.emptyIfNull(allProductsById)
                         .stream()
-                        .filter(product -> product.getName().equals(s))
+                        .filter(product -> product.getName().equalsIgnoreCase(s))
                         .map(product -> Product.builder()
                                 .sku(product.getSku())
                                 .name(product.getName())

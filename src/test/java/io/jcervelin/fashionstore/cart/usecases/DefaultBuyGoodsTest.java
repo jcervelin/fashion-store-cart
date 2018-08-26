@@ -60,18 +60,13 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
     @Test
     public void executeShouldReturnEmptyCart() {
         // GIVEN
-        final CartResponse cartResponse = CartResponse
-                .builder()
-                .products(new ArrayList<>())
-                .total(0.0)
-                .build();
+        thrown.expect(ContentNotFoundException.class);
+        thrown.expectMessage("Products: [] not found");
+
         // WHEN
         when(productRepository.findAllByNameIn(null))
                 .thenReturn(Optional.empty());
-        final CartResponse result = target.execute(null);
-
-        // THEN
-        Assertions.assertThat(result).isEqualToComparingFieldByField(cartResponse);
+        target.execute(null);
     }
 
     @Test
@@ -79,7 +74,11 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
         // GIVEN
         final CartResponse cartResponse = CartResponse
                 .builder()
-                .products(listOfProducts)
+                .products(Collections.singletonList(listOfProducts
+                        .stream()
+                        .filter(product -> product.getName()
+                                .equalsIgnoreCase("Trousers"))
+                        .findFirst().orElse(null)))
                 .total(35.50)
                 .build();
 
@@ -139,37 +138,32 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
     }
 
     @Test
-    public void executeShouldReturnNothingWhenThereAreOnlyInvalidProducts() {
-        // GIVEN
-        final CartResponse cartResponse = CartResponse
-                .builder()
-                .products(new ArrayList<>())
-                .total(0.0)
-                .build();
-
-        final Collection<String> productNames = Arrays.asList("Underwear","Socks");
-
-        // WHEN
-        when(productRepository.findAllByNameIn(productNames))
-                .thenReturn(null);
-
-        final CartResponse result = target.execute(productNames);
-
-        // THEN
-        Assertions.assertThat(result).isEqualToComparingFieldByField(cartResponse);
-    }
-
-    @Test
     public void executeShouldReturnExceptionWhenNoContentIsFound() {
         // GIVEN
         thrown.expect(ContentNotFoundException.class);
-        thrown.expectMessage("Products: [Underwear Socks] not found");
+        thrown.expectMessage("Products: [Underwear, Socks] not found");
 
         final Collection<String> productNames = Arrays.asList("Underwear","Socks");
 
         // WHEN
         when(productRepository.findAllByNameIn(productNames))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
+
+        target.execute(productNames);
+
+    }
+
+    @Test
+    public void executeShouldReturnExceptionWhenAllContentsAreWhitespaceOrEmpty() {
+        // GIVEN
+        thrown.expect(ContentNotFoundException.class);
+        thrown.expectMessage("Products: [] not found");
+
+        final Collection<String> productNames = Arrays.asList("  ","");
+
+        // WHEN
+        when(productRepository.findAllByNameIn(productNames))
+                .thenReturn(Optional.empty());
 
         target.execute(productNames);
 
