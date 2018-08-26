@@ -4,6 +4,7 @@ import io.jcervelin.fashionstore.cart.domains.ActionType;
 import io.jcervelin.fashionstore.cart.domains.CartResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BuyGoodsByCommandLine {
 
+    @Qualifier(value="defaultBuyGoods")
     private final BuyGoods buyGoods;
 
     /**
