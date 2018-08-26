@@ -59,6 +59,7 @@ public class DefaultBuyGoods extends BuyGoods {
                 .builder()
                 .products(productList)
                 .total(getTotal(productList))
+                .subTotal(getTotal(productList))
                 .build();
     }
 }

@@ -80,6 +80,7 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
                                 .equalsIgnoreCase("Trousers"))
                         .findFirst().orElse(null)))
                 .total(35.50)
+                .subTotal(35.50)
                 .build();
 
         final Collection<String> productNames = Arrays.asList("Trousers");
@@ -117,6 +118,7 @@ public class DefaultBuyGoodsTest extends UnitTestingSupport {
                 .builder()
                 .products(Arrays.asList(trousers1,trousers2,trousers3))
                 .total(106.50)
+                .subTotal(106.50)
                 .build();
 
         final Collection<String> productNames = Arrays.asList("Trousers","Trousers","Trousers");

@@ -21,7 +21,7 @@ public class CampaignAttributes {
     private String campaignType;
     private LocalDateTime starts;
     private LocalDateTime expires;
-    private Double percentFactor;
+    private Integer percentFactor;
     private Integer buyX;
     private Integer toY;
     private List<Product> productsAffected;

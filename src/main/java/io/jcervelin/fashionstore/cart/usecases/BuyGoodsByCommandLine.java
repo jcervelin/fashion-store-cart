@@ -4,18 +4,22 @@ import io.jcervelin.fashionstore.cart.domains.ActionType;
 import io.jcervelin.fashionstore.cart.domains.CartResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class BuyGoodsByCommandLine {
 
-    @Qualifier(value="defaultBuyGoods")
-    private final BuyGoods buyGoods;
+    @Resource(name="defaultBuyGoods")
+    private final BuyGoods defaultBuyGoods;
+
+    @Resource(name="campaignBuyGoods")
+    private final BuyGoods campaignBuyGoods;
 
     /**
      * Aways the first parameter of the arguments is an action, or a department
@@ -29,8 +33,13 @@ public class BuyGoodsByCommandLine {
             && ActionType.getActionTypes()
                 .stream()
                 .anyMatch(actionType -> actionType.getAction().equalsIgnoreCase(actions.get(0)))
-        )
-            return buyGoods.execute(actions.subList(1,actions.size()));
+        ){
+            final CartResponse cartResponse = campaignBuyGoods.execute(actions.subList(1, actions.size()));
+            if (CollectionUtils.emptyIfNull(cartResponse.getOffers()).isEmpty()) {
+                cartResponse.setOffers(Collections.singletonList("(No offers available)"));
+            }
+            return cartResponse;
+        }
 
         return CartResponse.builder()
         .products(new ArrayList<>())
