@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -18,19 +19,29 @@ import java.util.stream.Collectors;
 public class DefaultBuyGoods extends BuyGoods {
     private final ProductRepository repository;
 
+    /**
+     * Given a list of product names this method get a list of these products from the database
+     * for each product name it creates a new product with a different reference.
+     * If it was the same instance it could not be possible change price from one single product.
+     * @param productNames
+     * @return CartResponse
+     */
     @Override
     public CartResponse execute(final Collection<String> productNames) {
         final Collection<Product> allProductsById = repository.findAllByNameIn(productNames);
 
-        final List<Product> productList = CollectionUtils.emptyIfNull(productNames).stream()
-                .filter(s -> allProductsById.stream()
-                        .anyMatch(verifyIfProductExists(s)))
-                .map(s -> allProductsById
+        final List<Product> productList = CollectionUtils.emptyIfNull(productNames)
+                .stream()
+                .flatMap(s -> allProductsById
                         .stream()
                         .filter(product -> product.getName().equals(s))
-                        .findAny()
-                        .orElse(Product.builder().build())
-                ).collect(Collectors.toList());
+                        .map(product -> Product.builder()
+                                .sku(product.getSku())
+                                .name(product.getName())
+                                .price(product.getPrice())
+                                .build()
+                        )
+                ).collect(toList());
 
         return CartResponse
                 .builder()
